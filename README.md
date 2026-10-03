@@ -3,6 +3,18 @@
 신한카드 데이터 기반 카페 매출·리뷰 인사이트.
 Streamlit 단일 앱 + Supabase Postgres + Gemini 2.5 Flash.
 
+## 구현 범위 (2026-10-03 확인)
+
+소상공인이 매출·고객 데이터를 쉽게 비교하도록 가맹점·월별 이용·월별 고객 staging 테이블과 정규화 뷰를 구성하고, SQLAlchemy 조회 결과를 Streamlit 대시보드와 Gemini 보고서로 연결합니다.
+
+- 포함: staging 테이블 DDL, 기본키·외래키, 날짜·결측값 변환 뷰, 지표 조회·조립, 대시보드, Gemini API 호출.
+- 리뷰 화면은 `ui/Dashboard.py`의 `get_dummy_reviews` 샘플 데이터를 사용합니다. 리뷰 요약 함수가 존재하지만 자동 수집 프로그램은 포함되어 있지 않습니다.
+- CSV와 대응하는 DB 구조는 있으나 CSV 자동 적재 실행 프로그램·스케줄러·실패 재시도는 포함되어 있지 않습니다. 아래 CSVImport 다이어그램은 데이터 적재 흐름을 설명하며 자동화 완료를 뜻하지 않습니다.
+- Gemini API 사용과 모델 재학습은 다릅니다. 이 저장소에는 Gemini 모델 자체의 재학습 코드가 없습니다.
+- 향후 CSV 적재·품질 검증·중복 처리·실패 재시도를 추가해 반복 실행 가능한 파이프라인으로 확장할 수 있습니다.
+
+실제 파일 위치는 `db/ddl_001_create_raw_tables.sql`, `db/ddl_002_notes_views_indexes.sql`이며 현재 공개 테스트 파일은 `tests/test_db.py`입니다. 아래 폴더 구조·테스트 포인트 중 나머지 테스트와 `db/seed`·`db/migrations`는 현재 구현된 파일이 아닙니다.
+
 ---
 
 ## 1) 시스템 아키텍처
