@@ -36,7 +36,7 @@ with u as (
     to_date(ta_ym,'YYYYMM')::date as month,
     regexp_replace(rc_m1_saa, '.*_', '')     as sales_bucket_raw,
     regexp_replace(rc_m1_to_ue_ct, '.*_', '') as visits_bucket_raw,
-    greatest(dlv_saa_rat::numeric, 0)        as delivery_ratio,
+    nullif(dlv_saa_rat, -999999.9)           as delivery_ratio,       -- 특수값(-999999.9)은 0%가 아닌 결측으로 분리
     nullif(m1_sme_ry_saa_rat, -999999.9)     as peer_ind_sales_idx,   -- 동종업종 매출지수(=100 평균)
     nullif(m1_sme_ry_cnt_rat, -999999.9)     as peer_ind_cnt_idx,     -- 동종업종 건수지수
     nullif(m12_sme_ry_saa_pce_rt, -999999.9) as ind_rank_pct,         -- 업종 내 백분위(낮을수록 상위)
@@ -165,7 +165,7 @@ select
   (select bizarea from ov) as bizarea,
   regexp_replace(ts.rc_m1_saa,'.*_','') as sales_bucket,
   regexp_replace(ts.rc_m1_to_ue_ct,'.*_','') as visits_bucket,
-  greatest(ts.dlv_saa_rat::numeric,0) as delivery_ratio,
+  nullif(ts.dlv_saa_rat,-999999.9) as delivery_ratio,
   nullif(ts.m1_sme_ry_saa_rat,-999999.9) as peer_ind_sales_idx,
   nullif(ts.m1_sme_ry_cnt_rat,-999999.9) as peer_ind_cnt_idx,
   nullif(ts.m12_sme_ry_saa_pce_rt,-999999.9) as ind_rank_pct,

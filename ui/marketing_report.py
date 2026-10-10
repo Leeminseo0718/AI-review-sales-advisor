@@ -38,8 +38,7 @@ def _clean(df: pd.DataFrame) -> pd.DataFrame:
     for c in num_cols:
         df[c] = pd.to_numeric(df[c], errors="coerce")
 
-    if "delivery_ratio" in df.columns:
-        df["delivery_ratio"] = df["delivery_ratio"].clip(lower=0)
+    # delivery_ratio의 특수값은 SQL(nullif)에서 결측으로 분리되므로 0으로 보정하지 않음
 
     if "month" in df.columns:
         df["month"] = pd.to_datetime(df["month"], errors="coerce")

@@ -235,7 +235,7 @@ def _filter_kpi_context(ctx):
     title 또는 id 키에 다음 키워드 포함 시 제외:
       - '업종 내 백분위'
       - '업종대비 건수지수'
-      - '배달 비중'
+    배달 비중은 표시하며, 원천 특수값이면 0%가 아닌 '-'로 나타남.
     """
     if not ctx:
         return ctx
@@ -249,7 +249,7 @@ def _filter_kpi_context(ctx):
     if targets is None:
         return ctx
 
-    EXCLUDE_SUBSTR = ["업종 내 백분위", "업종대비 건수지수", "배달 비중"]
+    EXCLUDE_SUBSTR = ["업종 내 백분위", "업종대비 건수지수"]
     def keep(item):
         t = str(item.get("title") or item.get("name") or "")
         i = str(item.get("id") or "")

@@ -17,6 +17,12 @@ def _delta(a: Optional[float], b: Optional[float]) -> Optional[float]:
         return None
     return a - b
 
+def _fmt_delta(x: Optional[float]) -> Optional[str]:
+    # 비교할 값이 없으면 증감 자체를 표시하지 않음("-"는 하락으로 렌더링되므로 None 반환)
+    if x is None:
+        return None
+    return f"{x:.1f}%"
+
 def build_dashboard_cards(mct: str, start: str, end: str) -> Dict[str, Any]:
     ts = fetch_timeseries(mct, start, end)
     snap = fetch_snapshot(mct)
@@ -31,7 +37,7 @@ def build_dashboard_cards(mct: str, start: str, end: str) -> Dict[str, Any]:
             "key": "peer_ind_sales_idx",
             "title": "업종대비 매출지수",
             "value": _fmt_pct(latest.get("peer_ind_sales_idx")),
-            "delta": _fmt_pct(_delta(latest.get("peer_ind_sales_idx"), prev.get("peer_ind_sales_idx") if prev else None)),
+            "delta": _fmt_delta(_delta(latest.get("peer_ind_sales_idx"), prev.get("peer_ind_sales_idx") if prev else None)),
             "tooltip": "업종 평균=100",
             "badge": "▲" if _delta(latest.get("peer_ind_sales_idx"), prev.get("peer_ind_sales_idx") if prev else None) and _delta(latest.get("peer_ind_sales_idx"), prev.get("peer_ind_sales_idx")) > 0 else " "
         })
@@ -40,7 +46,7 @@ def build_dashboard_cards(mct: str, start: str, end: str) -> Dict[str, Any]:
             "key": "peer_ind_cnt_idx",
             "title": "업종대비 건수지수",
             "value": _fmt_pct(latest.get("peer_ind_cnt_idx")),
-            "delta": _fmt_pct(_delta(latest.get("peer_ind_cnt_idx"), prev.get("peer_ind_cnt_idx") if prev else None)),
+            "delta": _fmt_delta(_delta(latest.get("peer_ind_cnt_idx"), prev.get("peer_ind_cnt_idx") if prev else None)),
             "tooltip": "업종 평균=100",
             "badge": "▲" if _delta(latest.get("peer_ind_cnt_idx"), prev.get("peer_ind_cnt_idx") if prev else None) and _delta(latest.get("peer_ind_cnt_idx"), prev.get("peer_ind_cnt_idx")) > 0 else " "
         })
@@ -49,7 +55,7 @@ def build_dashboard_cards(mct: str, start: str, end: str) -> Dict[str, Any]:
             "key": "ind_rank_pct",
             "title": "업종 내 백분위",
             "value": _fmt_rank(latest.get("ind_rank_pct")),
-            "delta": _fmt_pct(_delta(prev.get("ind_rank_pct"), latest.get("ind_rank_pct")) if prev else None),  # 낮을수록 개선 → prev - now
+            "delta": _fmt_delta(_delta(prev.get("ind_rank_pct"), latest.get("ind_rank_pct")) if prev else None),  # 낮을수록 개선 → prev - now
             "tooltip": "낮을수록 상위",
             "badge": "▲" if prev and latest.get("ind_rank_pct") is not None and prev.get("ind_rank_pct") and latest["ind_rank_pct"] < prev["ind_rank_pct"] else " "
         })
@@ -58,7 +64,7 @@ def build_dashboard_cards(mct: str, start: str, end: str) -> Dict[str, Any]:
             "key": "area_rank_pct",
             "title": "상권 내 백분위",
             "value": _fmt_rank(latest.get("area_rank_pct")),
-            "delta": _fmt_pct(_delta(prev.get("area_rank_pct"), latest.get("area_rank_pct")) if prev else None),
+            "delta": _fmt_delta(_delta(prev.get("area_rank_pct"), latest.get("area_rank_pct")) if prev else None),
             "tooltip": "낮을수록 상위",
             "badge": "▲" if prev and latest.get("area_rank_pct") is not None and prev.get("area_rank_pct") and latest["area_rank_pct"] < prev["area_rank_pct"] else " "
         })
@@ -67,8 +73,8 @@ def build_dashboard_cards(mct: str, start: str, end: str) -> Dict[str, Any]:
             "key": "delivery_ratio",
             "title": "배달 비중",
             "value": _fmt_pct(latest.get("delivery_ratio")),
-            "delta": _fmt_pct(_delta(latest.get("delivery_ratio"), prev.get("delivery_ratio") if prev else None)),
-            "tooltip": "음수는 0으로 보정",
+            "delta": _fmt_delta(_delta(latest.get("delivery_ratio"), prev.get("delivery_ratio") if prev else None)),
+            "tooltip": "배달 미운영 등 원천 특수값(-999999.9)은 0%가 아닌 '-'로 표시",
             "badge": ""
         })
         # 신규/재방문

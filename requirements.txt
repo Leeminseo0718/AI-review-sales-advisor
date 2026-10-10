@@ -27,3 +27,6 @@ plotly
 
 # Report export (시스템 패키지 필요 있음)
 weasyprint==62.3
+
+# Test
+pytest

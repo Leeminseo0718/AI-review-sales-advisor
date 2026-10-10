@@ -8,9 +8,10 @@ with base as (
     o.mct_nm,
     o.hpsn_mct_bzn_cd_nm as bizarea,
     o.hpsn_mct_zcd_nm as industry,
-    u.m1_sme_ry_saa_rat as ind_sales_idx,
-    u.m12_sme_ry_saa_pce_rt as ind_rank_pct,
-    u.m12_sme_bzn_saa_pce_rt as area_rank_pct
+    -- 특수값(-999999.9)은 다른 지표와 같은 기준으로 결측 처리
+    nullif(u.m1_sme_ry_saa_rat, -999999.9)      as ind_sales_idx,
+    nullif(u.m12_sme_ry_saa_pce_rt, -999999.9)  as ind_rank_pct,
+    nullif(u.m12_sme_bzn_saa_pce_rt, -999999.9) as area_rank_pct
   from stg_merchant_overview o
   join stg_merchant_monthly_usage u using(encoded_mct)
   where to_date(u.ta_ym,'YYYYMM') = (
